@@ -46,7 +46,9 @@
 
                 .input-container
                     label Gender
-                    input(type="text" placeholder="Gender")
+                    select
+                        option(value="Male") Male
+                        option(value="Female") Female
 
             .section-container
                 h4 Contact Information

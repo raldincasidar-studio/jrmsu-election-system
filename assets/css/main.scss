@@ -32,6 +32,12 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    outline: 0;
+    tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent;
+    -moz-tap-highlight-color: transparent;
+    -ms-tap-highlight-color: transparent;
+    -o-tap-highlight-color: transparent;
 }
 
 .input-container {
@@ -55,8 +61,8 @@
         text-align: center;
         transition: all .3s linear;
 
-        &:active, &:focus {
-            border: 2px solid #1d1a71;
+        &:active, &:focus, &:hover {
+            border-color: #1d1a71;
         }
     }
 }

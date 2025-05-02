@@ -6,7 +6,7 @@
     p
         span.status OPEN #[br] #[span May 13 2024 7:00 AM - May 13 2025 8:00 PM]
 
-    button Start Voting
+    button(@click="$router.push('/start-voting')") Start Voting
 
     .footer
         p For problems during voting, please reach the Creatives Team by clicking the social icons below:
