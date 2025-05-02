@@ -118,7 +118,7 @@
 
 
 
-            button(type="submit") Register
+            button(type="submit" @click="$router.push('/home')") Register
 </template>
 
 <style lang="scss" scoped>
