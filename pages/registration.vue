@@ -45,6 +45,7 @@
         .input-container
             label Gender
             select
+                option(value="" disabled selected) -- SELECT GENDER --
                 option(value="Male") Male
                 option(value="Female") Female
 
@@ -65,12 +66,14 @@
         .input-container
             label School Year
             select
+                option(value="" disabled selected) -- SELECT YEAR --
                 option(value="2023-2024") 2023-2024
                 option(value="2024-2025") 2024-2025
 
         .input-container
             label Year
             select
+                option(value="" disabled selected) -- SELECT YEAR --
                 option(value="1st") 1st
                 option(value="2nd") 2nd
                 option(value="3rd") 3rd
@@ -79,12 +82,14 @@
         .input-container
             label Semester
             select
+                option(value="" disabled selected) -- SELECT SEMESTER --
                 option(value="1st") 1st
                 option(value="2nd") 2nd
 
         .input-container
             label College
             select
+                option(value="" disabled selected) -- SELECT COLLEGE --
                 option(value="CAS") CAS
                 option(value="CIT") CIT
                 option(value="COE") COE
@@ -93,6 +98,7 @@
         .input-container
             label Course
             select
+                option(value="" disabled selected) -- SELECT COURSE --
                 option(value="BSIT") BSIT
                 option(value="BSCS") BSCS
                 option(value="BSECE") BSECE
