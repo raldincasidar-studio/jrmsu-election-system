@@ -16,6 +16,8 @@
 
                 a.empty
 
+            img.avatar(src="~/assets/img/avatar.png")
+
             h2 Hi Raldin!
             p.chips-container
                 span.chip 23-A-00045
@@ -185,9 +187,16 @@
 
         }
 
+        img.avatar {
+            max-width: 150px;
+            margin: 50px 15px;
+            margin-bottom: 20px;
+        }
+
         h2 {
             margin: 50px 15px;
-            margin-bottom: 0;;
+            margin-top: 0;
+            margin-bottom: 0;
             color: #1d1a71;
         }
 

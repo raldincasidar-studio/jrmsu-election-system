@@ -15,7 +15,7 @@
 .bg-image
     .overlay
 
-        h2 Home Page
+        h2 {{ $route.meta.title || 'Home Page' }}
 
 .card-container
     slot

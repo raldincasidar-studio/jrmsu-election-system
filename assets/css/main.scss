@@ -78,6 +78,20 @@ button, .button {
     font-size: 15px;
     color: #252525;
     font-weight: bold;
+
+    svg {
+        width: 30px;
+        vertical-align: middle;
+        margin-left: 20px;
+    }
+
+    &:hover {
+        opacity: 0.8;
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
 }
 
 p {
