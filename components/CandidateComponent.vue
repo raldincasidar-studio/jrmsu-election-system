@@ -65,6 +65,7 @@
 
       h2 {
         font-size: 19px;
+        color: #1d1a71;
       }
 
       .vote-count {

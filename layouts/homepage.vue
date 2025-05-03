@@ -1,24 +1,24 @@
 <template lang="pug">
+div 
+    .fancy-navbar(:class="{'not-top': isNotTop}")
+        a.back-button(@click="$router.back()")
+            svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
+                path(stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18")
+        
+        .content-y
+            img(src="~/assets/img/jrmsu-log.png")
+            h1 JRMSU SSG Electronic Election Portal
 
-.fancy-navbar(:class="{'not-top': isNotTop}")
-    a.back-button(@click="$router.back()")
-        svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
-            path(stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18")
-    
-    .content-y
-        img(src="~/assets/img/jrmsu-log.png")
-        h1 JRMSU SSG Electronic Election Portal
-
-    a.empty
+        a.empty
 
 
-.bg-image
-    .overlay
+    .bg-image
+        .overlay
 
-        h2 {{ $route.meta.title || 'Home Page' }}
+            h2 {{ $route.meta.title || 'Home Page' }}
 
-.card-container
-    slot
+    .card-container
+        slot
 
 </template>
 
@@ -121,16 +121,19 @@
 <script setup>
 const isNotTop = ref(false)
 
-onMounted(() => {
-    window.addEventListener('scroll', () => {
+const scroll = () => {
         isNotTop.value = window.scrollY > 0
 
         console.log(isNotTop.value);
-    })
+    }
+
+onMounted(() => {
+    window.addEventListener('scroll', scroll)
+    scroll();
 })
 
 onUnmounted(() => {
-    window.removeEventListener('scroll', () => {})
+    window.removeEventListener('scroll', scroll)
 })
 
 
