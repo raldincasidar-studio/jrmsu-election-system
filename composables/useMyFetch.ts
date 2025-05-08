@@ -7,7 +7,7 @@ export function useMyFetch<T>(url: string | (() => string), options: UseFetchOpt
   return useFetch<T>(url, {
     // baseURL: process.env.NODE_ENV === 'production' ? '/' : 'http://localhost:3001',
     // baseURL: 'http://localhost/SSG_Election2/api-version1/services',
-    baseURL: 'https://thingproxy.freeboard.io/fetch/https://coderstation.net/SSG-Election/api-version1/services',
+    baseURL: 'https://coderstation-bypass.raldin.workers.dev/?url=https://coderstation.net/SSG-Election/api-version1/services',
     headers: {
       'User-Agent': 'Coderstation-Protocol',
       'API-Key': '-',

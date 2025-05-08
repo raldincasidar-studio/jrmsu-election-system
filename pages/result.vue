@@ -11,7 +11,7 @@
 
                 img(src="~/assets/img/jrmsu-log.png")
                 h2(v-if="isPreviewMode") PLEASE FINALIZE YOUR VOTES
-                h2(v-else) The 2025 SSG Election
+                h2(v-else) Election Result ({{ userData.College_Code }})
                 .notice-banner
                         .notice-border
                             svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
@@ -34,16 +34,16 @@
                 .position-container(v-for="(pos, position_index) in displayedCandidates" :key="position_index")
                     .header
                         h3 {{ pos?.position }}
-                        .chip {{ pos?.selectedCandidates.length }}/{{ pos?.max_votes }}
+                        .chip {{getTotalVotesPerPosition(pos)}} return votes
 
                     
 
-                    .no-candidate(v-if="pos.candidates.length == 0")
+                    .no-candidate(v-if="pos?.candidates?.length == 0")
                         svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6")
                           path(d="M10.375 2.25a4.125 4.125 0 1 0 0 8.25 4.125 4.125 0 0 0 0-8.25ZM10.375 12a7.125 7.125 0 0 0-7.124 7.247.75.75 0 0 0 .363.63 13.067 13.067 0 0 0 6.761 1.873c2.472 0 4.786-.684 6.76-1.873a.75.75 0 0 0 .364-.63l.001-.12v-.002A7.125 7.125 0 0 0 10.375 12ZM16 9.75a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5h-6Z")
                         p No candidates
                     .flex-content(v-else)
-                        CandidateComponent(v-for="(candidate, candidate_index) in pos.candidates" :key="candidate_index" :candidate="candidate" @click="selectCandidate(position_index, candidate)" :selected="isCandidateSelected(position_index, candidate)")
+                        CandidateComponent(v-for="(candidate, candidate_index) in pos.candidates" :key="candidate_index" :candidate="candidate" :selected="isCandidateSelected(position_index, candidate)" :votecount="candidate.Votes" :returnees="getTotalVotesPerPosition(pos)")
                 
                 
                 
@@ -68,18 +68,6 @@
                         span I confirm that the candidates shown above are correct and i confirm the submission of my vote.
 
 
-                button(@click="confirmVotes()" v-if="!isPreviewMode") 
-                  | Review Selection
-                  svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
-                    path(stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3")
-                
-                button(@click="submitVote()" v-if="isPreviewMode" :disabled="!isTrueInfoChecked") 
-                  | SUBMIT VOTE
-                  svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
-                    path(stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3")
-
-                
-
         
         .footer
             p For problems during voting, please reach the Creatives Team by clicking the social icons below:
@@ -93,7 +81,6 @@
                     svg(xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48")
                         path(fill="#448AFF" d="M24,4C13.5,4,5,12.1,5,22c0,5.2,2.3,9.8,6,13.1V44l7.8-4.7c1.6,0.4,3.4,0.7,5.2,0.7c10.5,0,19-8.1,19-18C43,12.1,34.5,4,24,4z")
                         path(fill="#FFF" d="M12 28L22 17 27 22 36 17 26 28 21 23z")
-    
     </template>
 
 <style lang="scss" scoped>
@@ -407,6 +394,14 @@ const isLoading = ref(true);
 const selectedCandidates = ref([]);
 const isTrueInfoChecked = ref(false);
 
+
+function getTotalVotesPerPosition(position) {
+  // console.log(position);
+  return position.candidates?.reduce((total, candidate) => {
+    return total + candidate.Votes;
+  }, 0) || 0;
+}
+
 async function getCandidates() {
   isLoading.value = true;
   // get all candidates
@@ -422,7 +417,7 @@ async function getCandidates() {
       title: data.value?.Status || 'Can not get candidates',
       icon: 'error'
     })
-    router.replace('/home');
+    // router.replace('/home');
     return;
   }
 
@@ -435,14 +430,14 @@ async function getCandidates() {
   })
 
   
-  console.log(candidateInfo.value, 'ha');
+  // console.log(candidateInfo.value, 'ha');
 
   if (!candidateInfo.value.Record || candidateInfoError.value) {
     $toast.fire({
       title: candidateInfo.value?.Status || 'Can not get candidate information',
       icon: 'error'
     })
-    router.replace('/home');
+    // router.replace('/home');
     return;
   }
 
@@ -464,42 +459,62 @@ async function getCandidates() {
       title: candidatesByCollege.value?.Status || 'Can not get candidates by college',
       icon: 'error'
     })
-    router.replace('/home');
+    // router.replace('/home');
     return;
   }
 
+
   const candidatesByCollegeContainer = candidatesByCollege.value.Record;
 
-  // I need to restructure and group the candidates by position
-  const candidatesByPosition = {};
-
-  for (const candidate of candidatesByCollegeContainer) {
-    
-    if (!candidatesByPosition[candidate.Position]) {
-      candidatesByPosition[candidate.Position] = {
-        max_votes: candidate.Num_Elected_Officer || 1,
-        ordering: candidate.Position_Rank || 1,
-        candidates: [],
-      };
+  // Get Result
+  const {data: candidateResult, error: candidateResultError} = await useMyFetch('Election/Votes/Result', {
+    method: 'POST',
+    body: {
+      School_Year: userData.value.School_Year,
+      College_Code: userData.value.College_Code,
+      Candidate_Info: candidatesByCollegeContainer
     }
+  })
 
-    candidatesByPosition[candidate.Position].candidates.push(candidate);
-
-
+  if (!candidateResult.value.Record || candidateResultError.value) {
+    $toast.fire({
+      title: candidateResult.value?.Status || 'Can not get candidates by college',
+      icon: 'error'
+    })
+    // router.replace('/home');
+    return;
   }
 
-  const sortedPosition = Object.entries(candidatesByPosition).map(([position, {max_votes, candidates, ordering}]) => ({
+  // console.log('result: ', candidateResult);
+  const candidateResultas = candidateResult.value.Record;
+
+  // // I need to restructure and group the candidates by position
+  const candidatesByPosition = {};
+
+  // for (const candidate of candidatesByCollegeContainer) {
+    
+  //   if (!candidatesByPosition[candidate.Position]) {
+  //     candidatesByPosition[candidate.Position] = {
+  //       max_votes: candidate.Num_Elected_Officer || 1,
+  //       ordering: candidate.Position_Rank || 1,
+  //       candidates: [],
+  //     };
+  //   }
+
+  //   candidatesByPosition[candidate.Position].candidates.push(candidate);
+
+
+  // }
+
+  const sortedPosition = Object.entries(candidateResultas).map(([position, candidates]) => ({
     position,
-    max_votes,
+    max_votes: 0,
     candidates,
-    ordering,
     selectedCandidates: []
-  })).sort( (a, b) => {
-    return a.ordering - b.ordering
-  } )
+  }))
 
   positionsWithCandidates.value = sortedPosition
-  console.log(positionsWithCandidates.value);
+  // console.log(positionsWithCandidates.value);
 
   isLoading.value = false;
 }
@@ -539,9 +554,9 @@ async function selectCandidate(position_index, candidate) {
     });
   }
 
-  console.log(positionsWithCandidates.value);
+  // console.log(positionsWithCandidates.value);
 
-  console.log('Is candidate selected: ', isCandidateSelected(position_index, candidate));
+  // console.log('Is candidate selected: ', isCandidateSelected(position_index, candidate));
 }
 
 async function confirmVotes() {
@@ -633,7 +648,7 @@ async function submitVote() {
     return;
   }
 
-  router.replace('/result');
+  router.replace('/home');
 
   $swal.fire({
     title: data.value.Status || 'Successfully submitted votes',
@@ -651,7 +666,7 @@ function isCandidateSelected(position_index, candidate) {
   // get position index
   const candidateIndex = positionsWithCandidates.value[position_index].selectedCandidates.findIndex(selected => selected.candidate_id === candidate.Candidate_ID);
   
-  console.log(candidateIndex !== -1);
+  // console.log(candidateIndex !== -1);
   return candidateIndex !== -1;
 
 }

@@ -42,6 +42,7 @@ div
         h2 {
             color: white;
             font-size: 25px;;
+            text-align: center;
         }
     }
 }
