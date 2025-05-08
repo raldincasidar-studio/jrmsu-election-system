@@ -1,12 +1,23 @@
 <template lang="pug">
 .container
-    img(src="~/assets/img/jrmsu-log.png")
-    h2 The 2025 SSG Election
-    p Welcome to the 2025-2026 SSG Election. The election is now open for voting. Please cast your vote on or before the scheduled voting schedule.
-    p
-        span.status OPEN #[br] #[span May 13 2024 7:00 AM - May 13 2025 8:00 PM]
-
-    button(@click="$router.push('/start-voting')") Start Voting
+    Transition(name="blur" mode="out-in")
+        div(v-if="isLoading")
+            //- img(src="~/assets/img/jrmsu-log.png")
+            br
+            img(src="~/assets/img/loader.svg")
+            //- h2 The 2025 SSG Election
+            p We are loading election details, please wait...
+        div(v-else)
+            img(src="~/assets/img/jrmsu-log.png")
+            h2 The 2025 SSG Election
+            p Welcome to the 2025-2026 SSG Election. The election is now open for voting. Please cast your vote on or before the scheduled voting schedule.
+            p
+                span.status(v-if="hasAlreadyVoted")
+                    svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
+                        path(stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z")
+                    | You have already casted your vote
+                span.status(:class="{ closed: isClosed }" v-else) {{ isClosed ? 'Already Closed' : 'Open for voting' }}
+            button(@click="$router.push('/start-voting')" v-if="!isClosed && !hasAlreadyVoted") Start Voting
 
     .footer
         p For problems during voting, please reach the Creatives Team by clicking the social icons below:
@@ -24,6 +35,14 @@
 </template>
 
 <style lang="scss" scoped>
+
+.blur-enter-active, .blur-leave-active {
+  transition: filter 0.5s;
+}
+.blur-enter, .blur-leave-to /* .blur-leave-active in <2.1.8 */ {
+  filter: blur(10px);
+}
+
 
 .container {
     text-align: center;
@@ -56,10 +75,21 @@ p {
     font-weight: bold;
     color: #15B938;
 
+    svg {
+        width: 30px;
+        margin: 10px;
+        vertical-align: middle;
+    }
+
     span {
         font-size: 15px;
         font-weight: normal;
         margin: 0;
+    }
+
+    &.closed {
+        background-color: rgba(255, 0, 0, 0.2);
+        color: #FF0000;
     }
 }
 
@@ -96,8 +126,81 @@ button {
 
 <script setup>
 
+const { $toast } = useNuxtApp();
+const userData = useCookie('UserData');
+
 // use layout HomePage
 definePageMeta({
-  layout: 'homepage'
+  layout: 'homepage',
+  title: userData.value ? `${userData.value.Student_Name}` : 'Home'
+})
+
+
+const isLoading = ref(true);
+const isClosed = ref(true);
+const hasAlreadyVoted = ref(true);
+
+async function setPageTitleToName() {
+
+    if (userData.value) {
+        useHead({
+            title: `${userData.value.Student_Name}`
+        });
+    }
+}
+
+async function checkElectionAvailability() {
+
+    isLoading.value = true;
+
+
+    const { data, error } = await useMyFetch('Election/Schedule/Check', {
+        method: 'post',
+        body: {
+            School_Year: userData.value.School_Year
+        }
+    });
+
+    if (!data.value.Status || error.value) {
+        $toast.fire({
+            title: data.value?.Status || 'Can not check election availability',
+            icon: 'error'
+        })
+        isLoading.value = false;
+        return;
+    }
+
+    // console.log(data.value.Status, 'haha');
+    isClosed.value = !/open/i.test(data.value.Status);
+
+    // check if student have already voted
+    const { data: hasVoted, error: hasVotedError } = await useMyFetch('Election/User/Status', {
+        method: 'post',
+        body: {
+            Voter_ID: userData.value.Student_ID,
+            School_Year: userData.value.School_Year
+        }
+    });
+
+    if (!hasVoted.value.Status || hasVotedError.value) {
+        $toast.fire({
+            title: hasVoted.value?.Status || 'Can not check election availability',
+            icon: 'error'
+        })
+        isLoading.value = false;
+        return;
+    }
+
+    hasAlreadyVoted.value = /already/i.test(hasVoted.value.Status);
+
+    
+    setTimeout(() => {
+        isLoading.value = false;
+    }, 1000);
+}
+
+onMounted(() => {
+    setPageTitleToName();
+    checkElectionAvailability();
 })
 </script>

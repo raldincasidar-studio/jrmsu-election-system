@@ -67,42 +67,31 @@
             label School Year
             select
                 option(value="" disabled selected) -- SELECT YEAR --
-                option(value="2023-2024") 2023-2024
-                option(value="2024-2025") 2024-2025
+                option(:value="year" v-for="year in school_year_options") {{ year }}
 
         .input-container
             label Year
             select
                 option(value="" disabled selected) -- SELECT YEAR --
-                option(value="1st") 1st
-                option(value="2nd") 2nd
-                option(value="3rd") 3rd
-                option(value="4th") 4th
+                option(:value="year" v-for="year in year_level_options") {{ year }}
 
         .input-container
             label Semester
             select
                 option(value="" disabled selected) -- SELECT SEMESTER --
-                option(value="1st") 1st
-                option(value="2nd") 2nd
+                option(:value="year" v-for="year in semester_options") {{ year }}
 
         .input-container
             label College
             select
                 option(value="" disabled selected) -- SELECT COLLEGE --
-                option(value="CAS") CAS
-                option(value="CIT") CIT
-                option(value="COE") COE
-                option(value="CHS") CHS
+                option(:value="college.code" v-for="college in college_options") {{ college.text }}
 
         .input-container
             label Course
             select
                 option(value="" disabled selected) -- SELECT COURSE --
-                option(value="BSIT") BSIT
-                option(value="BSCS") BSCS
-                option(value="BSECE") BSECE
-                option(value="BSN") BSN
+                option(:value="year" v-for="year in course_options") {{ year }}
 
     .section-container
         h4 Confirmation
@@ -258,5 +247,83 @@
 
 const isTrueInfoChecked = ref(false);
 const isAuthorizeDataChecked = ref(false);
+
+const studentId = ref('');
+const firstName = ref('');
+const middleName = ref('');
+const lastName = ref('');
+const birthdate = ref('');
+const gender = ref('');
+const email = ref('');
+const mobile_number = ref('');
+const school_year = ref('');
+const year_level = ref('');
+const semester = ref('');
+const college = ref('');
+const course = ref('');
+
+const school_year_options = ref([
+    '2023-2024',
+    '2024-2025'
+])
+
+const year_level_options = ref([
+    1,
+    2,
+    3,
+    4
+])
+
+const semester_options = ref([
+    '1st',
+    '2nd'
+])
+
+const college_options = ref([
+    // 'College of Arts and Sciences',
+    // 'College of Engineering and Technology'
+])
+
+const course_options = ref([
+    'BSIT',
+    'BSCS'
+])
+
+async function getColleges() {
+    const { data, error } = await useMyFetch('College/Search', {
+        method: 'POST',
+        body: {
+            College: "ALL"
+        }
+    })
+
+    if (!data.value?.Records || error.value) {
+        $toast.fire({
+            title: data.value?.Status || 'Can not get Colleges',
+            icon: 'error'
+        })
+        return;
+    }
+
+    const colleges = data.value.Records;
+
+    // console.log(colleges);
+    const colleges_formatted = [];
+    for (const college of colleges) {
+        colleges_formatted.push({
+            value: college.College_ID,
+            text: college.College_Description,
+            code: college.College_Code
+        });
+    }
+
+    college_options.value = colleges_formatted;
+    console.log(college_options.value);
+}
+
+onMounted(() => {
+    getColleges();
+})
+
 
 </script>

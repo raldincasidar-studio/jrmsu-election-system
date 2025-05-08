@@ -1,14 +1,14 @@
 <template lang="pug">
-.candidates-container()
-    img(src="~/assets/img/candidate.jpg")
+.candidates-container( :class="{active: selected}")
+    img(:src="candidate.Candidate_Photo ? `data:image/png;base64,${candidate.Candidate_Photo}` : '/avatar.png'" :alt="candidate.Candidate_Name")
     
     .info
-        h5 President
-        h2 Crist "Brader" Briand
+        h5 President ({{ candidate.Candidate_Slate }})
+        h2 {{ candidate.Candidate_Name }}
 
-        p.vote-count(v-if="false") 500 votes
-        .bar-counter(v-if="false")
-            .fill
+        //- p.vote-count(v-if="true") 500 votes
+        //- .bar-counter(v-if="true")
+        //-     .fill
 
 
     svg(v-if="candidate != 1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
@@ -100,3 +100,17 @@
     }
   }
 </style>
+
+<script setup>
+const props = defineProps({
+  candidate: {
+    type: Object,
+    required: true
+  },
+  selected: {
+    type: Boolean,
+    required: true
+  }
+});
+
+</script>
