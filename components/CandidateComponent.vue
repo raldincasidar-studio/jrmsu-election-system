@@ -4,7 +4,7 @@
     
     .info
         h5 {{ candidate.Position }} 
-          span(v-if="votecount == -1" style="text-transform: uppercase") ({{ candidate.Candidate_Slate }})
+          span(style="text-transform: uppercase") ({{ candidate.Candidate_Slate }})
         h2 {{ candidate.Candidate_Name }}
 
         p.vote-count(v-if="votecount != -1") {{ votecount }} votes

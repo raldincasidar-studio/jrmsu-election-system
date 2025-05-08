@@ -34,7 +34,6 @@
                 .position-container(v-for="(pos, position_index) in displayedCandidates" :key="position_index")
                     .header
                         h3 {{ pos?.position }}
-                        .chip {{getTotalVotesPerPosition(pos)}} return votes
 
                     
 
