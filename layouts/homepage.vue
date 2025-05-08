@@ -15,7 +15,7 @@ div
     .bg-image
         .overlay
 
-            h2 {{ $route.meta.title || 'Home Page' }}
+            h2 {{ userData.Student_Name || $route.meta.title || 'Home' }}
 
     .card-container
         slot
@@ -121,6 +121,8 @@ div
 
 <script setup>
 const isNotTop = ref(false)
+
+const userData = useCookie('UserData');
 
 const scroll = () => {
         isNotTop.value = window.scrollY > 0
