@@ -11,7 +11,7 @@
 
                 img(src="~/assets/img/jrmsu-log.png")
                 h2(v-if="isPreviewMode") PLEASE FINALIZE YOUR VOTES
-                h2(v-else) Election Result ({{ userData.College_Code }})
+                h2(v-else) Live Election Result ({{ userData.College_Code }})
                 .notice-banner
                         .notice-border
                             svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")

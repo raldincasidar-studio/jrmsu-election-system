@@ -10,7 +10,7 @@
         input(type="text" placeholder="Student ID: eg. 25-A-00000" v-model="student_id" :disabled="isLoading")
     
     .input-container
-        label Default Password (JRMSU ARMS Password)
+        label JRMSU ARMS Password
         input(type="password" placeholder="**********" v-model="password" :disabled="isLoading")
     
     button(@click="login()" :disabled="isLoading") 
