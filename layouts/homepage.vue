@@ -24,11 +24,19 @@ div
     marquee(direction="left" class="marquee" behavior="scroll" scrolldelay="2") 
         | Copyright &copy; 2025
         | Powered by CCS-Creatives Commitee. 
-        | Dean: Armando Saguin, MSIT
-        | Chairperson: Sheen Lee Edis, 
-        | President: Stefhanie Anne Batucan
-        | Lead Frontend Developer: Raldin C. Disomimba
-        | Lead Backend Developer: Renz Santiago
+        | Chairperson: Sheen Lee S. Edis
+        | President: Stefhanie Ann V. Batucan
+        | Vice-President: Ej A. Vinculado
+        | Secretary: Nesfhe Niña S. Magsanay
+        | Treasurer: Mischi Jeda J. Elumba
+        | Auditor: Peter Robert C. Ayono
+        | P.I.O.: Erl Yves C. Tagaro
+        | Lead Back-End Developer: Resalute, Gehan Lumantas
+        | Back-End Developers: Elumba, Robert Mayo Lomocso; Santiago, Renz Labadan; Hampac, Marklan Alforque; Ej A. Vinculado; Abang, Rusty Lloyd Acas; Edis, Sheen Lee Sotomayor
+        | Lead Front-End Developer: Raldin C. Disomimba
+        | Front-End Developers: Peter Robert C. Ayono; Erl Yves C. Tagaro; Ontoy, Jazrelle Tan; Binondo, Kenneth Bobby Divinagracia; Abang, Rusty Lloyd Acas; Edis, Sheen Lee Sotomayor
+        | Lead UI/UX Graphic Designer: Almosera, Earl Jarvy Naong
+        | UI/UX Graphic Designer: Mischi Jeda J. Elumba
 </template>
 
 <style scoped lang="scss">
