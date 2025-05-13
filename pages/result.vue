@@ -402,6 +402,21 @@ function getTotalVotesPerPosition(position) {
 }
 
 async function getCandidates() {
+
+  // prompt for password
+  if (prompt('Enter Password') !== "SUPERSECRETPASSWORDSELECOM123") {
+    
+    $toast.fire({
+      title: 'ONLY AUTHORIZED PERSONNEL CAN ACCESS THIS PAGE',
+      icon: 'error'
+    })
+    router.replace('/home');
+    return;
+
+  }
+
+
+
   isLoading.value = true;
   // get all candidates
   const {data, error} = await useMyFetch('Candidate/Account/ID/Get', {

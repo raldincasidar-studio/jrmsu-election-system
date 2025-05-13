@@ -578,6 +578,71 @@ async function confirmVotes() {
 }
 
 onMounted(async () => {
+
+  const { data, error } = await useMyFetch('Election/Schedule/Check', {
+        method: 'post',
+        body: {
+            School_Year: userData.value.School_Year
+        }
+    });
+
+    if (!data.value.Status || error.value) {
+        $toast.fire({
+            title: data.value?.Status || 'Can not check election availability',
+            icon: 'error'
+        })
+        router.replace('/home');
+        isLoading.value = false;
+        return;
+    }
+
+    // console.log(data.value.Status, 'haha');
+    const isClosed = !/open/i.test(data.value.Status);
+
+    if (isClosed) {
+        $toast.fire({
+            title: 'Election is still closed',
+            icon: 'error'
+        })
+        router.replace('/home');
+        isLoading.value = false;
+        return;
+    }
+
+    // check if student have already voted
+    const { data: hasVoted, error: hasVotedError } = await useMyFetch('Election/User/Status', {
+        method: 'post',
+        body: {
+            Voter_ID: userData.value.Student_ID,
+            School_Year: userData.value.School_Year
+        }
+    });
+
+    if (!hasVoted.value.Status || hasVotedError.value) {
+        $toast.fire({
+            title: hasVoted.value?.Status || 'Can not check election availability',
+            icon: 'error'
+        })
+        router.replace('/home');
+        isLoading.value = false;
+        return;
+    }
+
+    const hasAlreadyVoted = /already/i.test(hasVoted.value.Status);
+
+    if (hasAlreadyVoted) {
+        $toast.fire({
+            title: 'You have already voted',
+            icon: 'error'
+        })
+        router.replace('/home');
+        isLoading.value = false;
+        return;
+    }
+
+
+
+  // finally, get the candidates
   getCandidates();
 })
 
@@ -633,7 +698,7 @@ async function submitVote() {
     return;
   }
 
-  router.replace('/result');
+  router.replace('/home');
 
   $swal.fire({
     title: data.value.Status || 'Successfully submitted votes',

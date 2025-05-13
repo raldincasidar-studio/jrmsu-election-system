@@ -16,10 +16,10 @@
                     svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
                         path(stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z")
                     | You have already casted your vote
-                span.status(:class="{ closed: isClosed }" v-else) {{ isClosed ? 'Already Closed' : 'Open for voting' }}
+                span.status(:class="{ closed: isClosed }" v-else) {{ isClosed ? 'Election Closed' : 'Open for voting' }}
             button(@click="$router.push('/start-voting')" v-if="!isClosed && !hasAlreadyVoted") Start Voting
-            button(@click="$router.push('/result')" v-if="!isClosed && hasAlreadyVoted") 
-                | View Live Results
+            //- button(@click="$router.push('/result')" v-if="!isClosed && hasAlreadyVoted") 
+            //-     | View Live Results
                 //- svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6")
                 //-     path(fill-rule="evenodd" d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd")
             button.secondary(@click="logout()") 
