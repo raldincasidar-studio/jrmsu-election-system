@@ -7,7 +7,7 @@
           span(style="text-transform: uppercase") ({{ candidate.Candidate_Slate }})
         h2 {{ candidate.Candidate_Name }}
 
-        p.vote-count(v-if="votecount != -1") {{ votecount }} votes
+        p.vote-count(v-if="votecount != -1") {{ votecount }} vote(s)
         .bar-counter(v-if="votecount != -1")
             .fill(:style="{ width: (votecount/returnees) * 100 + '%' }")
 
