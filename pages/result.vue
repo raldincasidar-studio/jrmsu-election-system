@@ -11,7 +11,8 @@
 
                 img(src="~/assets/img/jrmsu-log.png")
                 h2(v-if="isPreviewMode") PLEASE FINALIZE YOUR VOTES
-                h2(v-else) Live Election Result ({{ userData.College_Code }})
+                h2(v-else) Live Election Result ({{ college || 'N/A' }})
+
                 .notice-banner
                         .notice-border
                             svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
@@ -30,20 +31,41 @@
                                         path(fill="#448AFF" d="M24,4C13.5,4,5,12.1,5,22c0,5.2,2.3,9.8,6,13.1V44l7.8-4.7c1.6,0.4,3.4,0.7,5.2,0.7c10.5,0,19-8.1,19-18C43,12.1,34.5,4,24,4z")
                                         path(fill="#FFF" d="M12 28L22 17 27 22 36 17 26 28 21 23z")
 
+                div(v-if="isPasswordInvalid")
+                    svg(style="width: 100px; color: grey" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
+                      path(stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z")
 
-                .position-container(v-for="(pos, position_index) in displayedCandidates" :key="position_index")
-                    .header
-                        h3 {{ pos?.position }}
+                    h4 Election results are secured with a password, please enter the password to view the results
+
+                    button(@click="promptPassword()") UNLOCK RESULTS
+                div(v-else)
 
                     
+                    .input-container
+                        label College
+                        select(v-model="college")
+                            option(value="" disabled selected) -- SELECT COLLEGE --
+                            option(:value="college.code" v-for="college in college_options") {{ college.text }}
 
-                    .no-candidate(v-if="pos?.candidates?.length == 0")
-                        svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6")
-                          path(d="M10.375 2.25a4.125 4.125 0 1 0 0 8.25 4.125 4.125 0 0 0 0-8.25ZM10.375 12a7.125 7.125 0 0 0-7.124 7.247.75.75 0 0 0 .363.63 13.067 13.067 0 0 0 6.761 1.873c2.472 0 4.786-.684 6.76-1.873a.75.75 0 0 0 .364-.63l.001-.12v-.002A7.125 7.125 0 0 0 10.375 12ZM16 9.75a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5h-6Z")
-                        p No candidates
-                    .flex-content(v-else)
-                        CandidateComponent(v-for="(candidate, candidate_index) in pos.candidates" :key="candidate_index" :candidate="candidate" :selected="isCandidateSelected(position_index, candidate)" :votecount="candidate.Votes" :returnees="getTotalVotesPerPosition(pos)")
-                
+
+                    div(v-if="college != ''")
+                      .position-container(v-for="(pos, position_index) in displayedCandidates" :key="position_index")
+                          .header
+                              h3 {{ pos?.position }}
+
+                          
+
+                          .no-candidate(v-if="pos?.candidates?.length == 0")
+                              svg(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6")
+                                path(d="M10.375 2.25a4.125 4.125 0 1 0 0 8.25 4.125 4.125 0 0 0 0-8.25ZM10.375 12a7.125 7.125 0 0 0-7.124 7.247.75.75 0 0 0 .363.63 13.067 13.067 0 0 0 6.761 1.873c2.472 0 4.786-.684 6.76-1.873a.75.75 0 0 0 .364-.63l.001-.12v-.002A7.125 7.125 0 0 0 10.375 12ZM16 9.75a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5h-6Z")
+                              p No candidates
+                          .flex-content(v-else)
+                              CandidateComponent(v-for="(candidate, candidate_index) in pos.candidates" :key="candidate_index" :candidate="candidate" :selected="isCandidateSelected(position_index, candidate)" :votecount="candidate.Votes" :returnees="getTotalVotesPerPosition(pos)")
+                    div(v-else)
+                        svg(style="width: 100px; color: gray" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6")
+                          path(stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z")
+
+                        h4 Please Select a College
                 
                 
                 .preview-mode-indicator(v-if="isPreviewMode") 
@@ -379,16 +401,58 @@ const userData = useCookie('UserData');
 
 definePageMeta({
   layout: "homepage",
-  title: userData.value ? `${userData.value.Student_Name}` : "Start Voting"
+  title: userData.value ? `${userData.value?.Student_Name}` : "Election Results"
 
 });
+
+const college_options = ref([]);
+const college = ref('');
+
+watch(college, async (newValue) => {
+    if (newValue) {
+        // console.log(newValue);
+        getCandidates();
+    }
+})
+
+async function getColleges() {
+    const { data, error } = await useMyFetch('College/Search', {
+        method: 'POST',
+        body: {
+            College: "ALL"
+        }
+    })
+
+    if (!data.value?.Records || error.value) {
+        $toast.fire({
+            title: data.value?.Status || 'Can not get Colleges',
+            icon: 'error'
+        })
+        return;
+    }
+
+    const colleges = data.value.Records;
+
+    // console.log(colleges);
+    const colleges_formatted = [];
+    for (const college of colleges) {
+        colleges_formatted.push({
+            value: college.College_ID,
+            text: college.College_Description,
+            code: college.College_Code
+        });
+    }
+
+    college_options.value = colleges_formatted;
+    console.log(college_options.value);
+}
 
 const { $toast, $swal } = useNuxtApp();
 
 
 const positionsWithCandidates = ref([]);
 
-const isLoading = ref(true);
+const isLoading = ref(false);
 
 const selectedCandidates = ref([]);
 const isTrueInfoChecked = ref(false);
@@ -402,27 +466,12 @@ function getTotalVotesPerPosition(position) {
 }
 
 async function getCandidates() {
-
-  // prompt for password
-  if (prompt('Enter Password') !== "SUPERSECRETPASSWORDSELECOM123") {
-    
-    $toast.fire({
-      title: 'ONLY AUTHORIZED PERSONNEL CAN ACCESS THIS PAGE',
-      icon: 'error'
-    })
-    router.replace('/home');
-    return;
-
-  }
-
-
-
   isLoading.value = true;
   // get all candidates
   const {data, error} = await useMyFetch('Candidate/Account/ID/Get', {
     method: 'POST',
     body: {
-      Election_Year: userData.value.School_Year
+      Election_Year: '2024-2025'
     }
   })
 
@@ -462,8 +511,8 @@ async function getCandidates() {
   const {data: candidatesByCollege, error: candidatesByCollegeError} = await useMyFetch('Candidate/Ballot/Generate', {
     method: 'POST',
     body: {
-      Election_year: userData.value.School_Year,
-      College_Code: userData.value.College_Code,
+      Election_year: userData.value?.School_Year || '2024-2025',
+      College_Code: college.value || 'CCS',
       Candidate_Info: candidateInfoRecord
     }
   })
@@ -484,8 +533,8 @@ async function getCandidates() {
   const {data: candidateResult, error: candidateResultError} = await useMyFetch('Election/Votes/Result', {
     method: 'POST',
     body: {
-      School_Year: userData.value.School_Year,
-      College_Code: userData.value.College_Code,
+      School_Year: userData.value?.School_Year || '2024-2025',
+      College_Code: college.value || 'CCS',
       Candidate_Info: candidatesByCollegeContainer
     }
   })
@@ -606,72 +655,41 @@ async function confirmVotes() {
   
 }
 
-onMounted(async () => {
-  getCandidates();
-})
+async function promptPassword() {
 
-
-async function submitVote() {
-  if (!isTrueInfoChecked.value) {
-    $toast.fire({
-      title: 'Please check the checkbox to confirm your vote',
-      icon: 'error'
-    })
-    return;
-  }
-
-
-  const votes = positionsWithCandidates.value.map(position => ({
-    position_name: position.position,
-    candidates: position.selectedCandidates
-  }))
-
-
-  const { isConfirmed } = await $swal.fire({
-    title: 'Final Confirmation',
-    text: 'Please confirm that you want to submit your final votes. This will be sent to the central server and cannot be changed.',
-    icon: 'warning',
+  const { value: password } = await $swal.fire({
+    title: 'Enter Password',
+    text: 'Only authorized personnel can access this page',
+    input: 'password',
+    inputPlaceholder: 'Enter your password',
     showCancelButton: true,
-    confirmButtonText: 'Yes, submit',
-    cancelButtonText: 'Go Back'
-  });
-
-  if (!isConfirmed) 
-    return;
-
-  
-
-  isLoading.value = true;
-  
-
-  const { data, error } = await useMyFetch('Election/Votes/Cast', {
-    method: 'post',
-    body: {
-      Voter_ID: userData.value.Student_ID,
-      School_Year: userData.value.School_Year,
-      votes_list: votes
-    }
-  });
-
-  if (!data.value?.Record || error.value) {
-    $toast.fire({
-      title: data.value?.Status || 'Can not submit votes',
-      icon: 'error'
-    })
-    isLoading.value = false;
-    return;
-  }
-
-  router.replace('/home');
-
-  $swal.fire({
-    title: data.value.Status || 'Successfully submitted votes',
-    icon: 'success'
+    confirmButtonText: 'Submit',
+    cancelButtonText: 'Cancel',
   })
 
-  isLoading.value = false;
-
+  if (password !== "SUPERSECRETPASSWORDSELECOM123") {
+    $toast.fire({
+      title: 'Incorrect Password',
+      icon: 'error'
+    })
+    isPasswordInvalid.value = true;
+    return;
+  }
+  else {
+    isPasswordInvalid.value = false;
+    getColleges();
+  }
 }
+
+const isPasswordInvalid = ref(true);
+
+onMounted(async () => {
+
+  promptPassword();
+  // getColleges();
+  // getCandidates();
+})
+
 
 const router = useRouter();
 
