@@ -15,11 +15,20 @@ div
     .bg-image
         .overlay
 
-            h2 {{ userData.Student_Name || $route.meta.title || 'Home' }}
+            h2 {{ userData?.Student_Name || $route?.meta?.title || 'Home' }}
 
     .card-container
         slot
 
+    
+    marquee(direction="left" class="marquee" behavior="scroll" scrolldelay="2") 
+        | Copyright &copy; 2025
+        | Powered by CCS-Creatives Commitee. 
+        | Dean: Armando Saguin, MSIT
+        | Chairperson: Sheen Lee Edis, 
+        | President: Stefhanie Anne Batucan
+        | Lead Frontend Developer: Raldin C. Disomimba
+        | Lead Backend Developer: Renz Santiago
 </template>
 
 <style scoped lang="scss">
@@ -45,6 +54,19 @@ div
             text-align: center;
         }
     }
+}
+
+marquee {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 5px;
+    background-color: #ead012;
+    color: black;
+    font-size: 15px;
+    z-index: 99;
 }
 
 .fancy-navbar {
